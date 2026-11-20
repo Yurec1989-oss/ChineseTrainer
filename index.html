@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 
 <html lang="ru">
@@ -10,7 +8,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="theme-color" content="#172033">
+<meta name="theme-color" content="#17243a">
 
 <title>Chinese Trainer</title>
 
@@ -18,39 +16,57 @@
 
 *{box-sizing:border-box}
 
-body{margin:0;background:#f1f5f9;color:#172033;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif}
+body{margin:0;background:#f2f4f8;color:#202b3c;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 
-header{background:#172033;color:white;padding:25px 20px}
+header{background:#17243a;color:white;padding:22px 18px}
 
-header h1{margin:0;font-size:25px}
+header h1{margin:0 0 6px;font-size:25px}
 
-header p{color:#cbd5e1;margin-bottom:0}
+header p{margin:0;color:#cbd5e1;font-size:14px}
 
-main{max-width:650px;margin:auto;padding:18px}
+main{max-width:650px;margin:auto;padding:16px}
 
-.card{background:white;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 3px 14px #0000000b}
+.card{background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 12px #17243a0d}
 
-.label{font-size:13px;color:#64748b}
+.progress{height:9px;background:#e5eaf1;border-radius:10px;overflow:hidden;margin:12px 0}
 
-.task{font-size:21px;line-height:1.5;font-weight:600;margin:18px 0}
+.progress div{height:100%;background:#2878d0;width:0}
 
-textarea{width:100%;min-height:120px;border:1px solid #cbd5e1;border-radius:12px;padding:13px;font-size:17px}
+.small{font-size:13px;color:#64748b}
 
-button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:600;cursor:pointer}
+h2{font-size:20px;margin:5px 0 12px}
 
-.primary{background:#2563eb;color:white;width:100%;margin-top:12px}
+h3{font-size:16px;margin:0 0 10px}
 
-.secondary{background:#e8eef8;color:#172033}
+button{border:0;border-radius:11px;padding:13px 16px;font-size:15px;font-weight:600;cursor:pointer}
 
-.answer{display:none;background:#eff6ff;padding:15px;border-radius:12px;margin-top:15px;line-height:1.7}
+.primary{background:#1769c2;color:white}
 
-.buttons{display:flex;gap:10px;margin-top:15px}
+.secondary{background:#e8eef6;color:#24364d}
 
-.buttons button{flex:1}
+button:disabled{opacity:.4}
 
-.progress{height:8px;background:#e2e8f0;border-radius:8px;overflow:hidden;margin-top:12px}
+textarea{width:100%;min-height:105px;border:1px solid #ccd5e1;border-radius:12px;padding:12px;font-size:17px;resize:vertical}
 
-.bar{height:100%;width:0;background:#2563eb;transition:width .2s}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+
+.actions button{flex:1}
+
+.answer{display:none;background:#edf5ff;border-radius:12px;padding:14px;margin-top:12px;line-height:1.7}
+
+.answer.show{display:block}
+
+.chinese{font-size:21px;font-weight:600}
+
+.list{display:grid;gap:7px}
+
+.lesson{display:flex;justify-content:space-between;align-items:center;text-align:left;background:#f1f5f9;color:#24364d;width:100%;padding:12px}
+
+.lesson.active{background:#dcecff;outline:2px solid #2878d0}
+
+.lesson.done{background:#e5f5e9}
+
+#message{color:#b45309;font-size:14px;margin-top:10px}
 
 </style>
 
@@ -60,179 +76,523 @@ button{border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:600;c
 
 <header>
 
-<h1>中文 Chinese Trainer</h1>
+<h1>Chinese Trainer</h1>
 
-<p>Ежедневная практика китайского языка</p>
+<p>100 дней · 50 конструкций · 10 заданий в день</p>
 
 </header>
 
 <main>
 
-<div class="card">
+<section class="card">
 
-<div style="display:flex;justify-content:space-between">
+<div class="small">ОБЩИЙ ПРОГРЕСС</div>
 
-<strong>Тренировка</strong>
+<h2 id="overall">День 1 из 100</h2>
 
-<span class="label" id="counter"></span>
+<div class="progress"><div id="overallBar"></div></div>
+
+<div class="small" id="doneText">Выполнено 0 из 100 дней</div>
+
+</section>
+
+<section class="card">
+
+<div class="small" id="dayLabel">ДЕНЬ 1 · ПЕРВАЯ ТРЕНИРОВКА</div>
+
+<h2 id="construction">是 — быть, являться</h2>
+
+<div class="small" id="description">Базовая конструкция</div>
+
+<div class="progress"><div id="dayBar"></div></div>
+
+<div class="small" id="taskCount">Задание 1 из 10</div>
+
+</section>
+
+<section class="card">
+
+<div class="small">ПЕРЕВЕДИ НА КИТАЙСКИЙ</div>
+
+<h2 id="question">Загрузка задания...</h2>
+
+<textarea id="userAnswer" placeholder="Напиши китайский перевод..."></textarea>
+
+<div class="actions">
+
+<button class="secondary" onclick="showAnswer()">Показать ответ</button>
+
+<button class="primary" onclick="nextTask()">Далее</button>
+
+</div>
+
+<div class="answer" id="answer">
+
+<div class="small">ЭТАЛОННЫЙ ОТВЕТ</div>
+
+<div class="chinese" id="chineseAnswer"></div>
+
+<div id="explanation" class="small"></div>
 
 </div>
 
-<div class="progress"><div class="bar" id="bar"></div></div>
+<div id="message"></div>
 
-<p class="label">Переведи на китайский:</p>
+</section>
 
-<div class="task" id="question"></div>
+<section class="card">
 
-<textarea id="userAnswer" placeholder="Напиши свой перевод..."></textarea>
+<h3>Управление обучением</h3>
 
-<button class="primary" onclick="showAnswer()">Показать правильный ответ</button>
+<div class="actions">
 
-<div class="answer" id="answer"></div>
+<button class="secondary" onclick="previousDay()">Предыдущий день</button>
 
-<div class="buttons">
+<button class="primary" onclick="completeDay()">Завершить день</button>
 
-<button class="secondary" onclick="previous()">← Назад</button>
-
-<button class="secondary" onclick="next()">Далее →</button>
+<button class="secondary" onclick="nextDay()">Следующий день</button>
 
 </div>
 
-</div>
+</section>
 
-<div class="card">
+<section class="card">
 
-<strong>Мой прогресс</strong>
+<h3>Программа — 50 конструкций</h3>
 
-<h2 id="progress">0 / 10</h2>
+<div class="small" style="margin-bottom:10px">Каждая конструкция изучается два дня.</div>
 
-<p class="label">Задания, которые ты отметил как выполненные</p>
+<div class="list" id="lessonList"></div>
 
-<button class="secondary" onclick="markDone()">Отметить выполненным</button>
-
-<button class="secondary" style="margin-top:10px;width:100%" onclick="resetProgress()">Сбросить прогресс</button>
-
-</div>
+</section>
 
 </main>
 
 <script>
 
-const tasks=[
+const curriculum = [
 
-["Отдел качества не получил подтверждение от поставщика.","质量部门还没有收到供应商的确认。"],
+["是","быть, являться"],
 
-["На складе недостаточно деталей.","仓库里的零件数量不足。"],
+["有","иметь, есть"],
 
-["Отсутствие результатов проверки означает, что проектный отдел не может подтвердить готовность производства.","没有检查结果，相当于项目部门无法确认生产是否准备好了。"],
+["在","находиться, в/на"],
 
-["Недостаток данных не позволяет принять окончательное решение.","数据不足，无法做出最终决定。"],
+["不","отрицание"],
 
-["Поставщик должен устранить обнаруженные проблемы.","供应商需要解决发现的问题。"],
+["没有","не иметь, нет"],
 
-["Задержка поставки может повлиять на производственный план.","交货延期可能会影响生产计划。"],
+["了","завершённое действие или изменение"],
 
-["Отдел качества должен повторно проверить все детали.","质量部门需要重新检查所有零件。"],
+["过","опыт действия"],
 
-["Отсутствие необходимых деталей может привести к остановке линии.","缺少必要的零件可能会导致生产线停线。"],
+["正在","действие происходит сейчас"],
 
-["Проектный отдел должен заранее уведомить производство.","项目部门需要提前通知生产部门。"],
+["要","нужно, собирается"],
 
-["Мы должны выяснить причину отклонения от плана.","我们需要查明偏离计划的原因。"]
+["会","уметь, мочь, вероятно"],
+
+["能","мочь, иметь возможность"],
+
+["可以","можно, разрешено"],
+
+["想","хотеть, думать"],
+
+["比","сравнение"],
+
+["越来越","всё более"],
+
+["因为……所以……","потому что… поэтому…"],
+
+["由于……","из-за, в связи с"],
+
+["导致……","приводить к"],
+
+["从而……","тем самым"],
+
+["让……","заставлять, позволять"],
+
+["为了……","для того чтобы"],
+
+["以便……","чтобы, для того чтобы"],
+
+["以免……","чтобы не"],
+
+["防止……","предотвращать"],
+
+["通过……来……","посредством чего-либо делать"],
+
+["根据……","согласно, на основании"],
+
+["基于……","на основе"],
+
+["由……来负责","за что-либо отвечает"],
+
+["由……来决定","определяется кем-либо"],
+
+["相当于……","равносильно"],
+
+["一旦……","как только"],
+
+["除非……","если только не"],
+
+["否则……","иначе"],
+
+["只有……才……","только если… тогда…"],
+
+["才……","только тогда"],
+
+["即使……也……","даже если… всё равно…"],
+
+["如果……就……","если… то…"],
+
+["在……之前","до того как"],
+
+["从……到……","от… до…"],
+
+["在……之间","между"],
+
+["干不了","не мочь выполнить"],
+
+["出不去","не мочь выйти"],
+
+["做不完","не успеть закончить"],
+
+["对不上","не совпадать"],
+
+["用于……","использоваться для"],
+
+["用作……","использоваться в качестве"],
+
+["取决于……","зависеть от"],
+
+["倾向于……","склоняться к"],
+
+["不仅……而且……","не только… но и…"],
+
+["相反……","напротив"]
 
 ];
 
-let current=0;
+// Проверенные примеры для первых пяти конструкций.
 
-let done=JSON.parse(localStorage.getItem("ct_done")||"[]");
+// День 1 и день 2 используют один набор для повторения.
 
-let answers=JSON.parse(localStorage.getItem("ct_answers")||"{}");
+// Новые наборы будем добавлять постепенно.
+
+const exercises = {
+
+0: [
+
+["Это деталь.","这是一个零件。"],
+
+["Это производственный план.","这是生产计划。"],
+
+["Это результаты проверки.","这是检查结果。"],
+
+["Это проблема качества.","这是质量问题。"],
+
+["Это ответственное подразделение.","这是负责部门。"],
+
+["Это не наша деталь.","这不是我们的零件。"],
+
+["Это важная информация.","这是重要的信息。"],
+
+["Это новый поставщик.","这是新的供应商。"],
+
+["Это отклонение от плана.","这是计划中的偏差。"],
+
+["Это окончательное решение.","这是最终决定。"]
+
+],
+
+1: [
+
+["На складе есть детали.","仓库里有零件。"],
+
+["У нас есть результаты проверки.","我们有检查结果。"],
+
+["В системе есть эта информация.","系统里有这个信息。"],
+
+["У поставщика есть вопросы.","供应商有问题。"],
+
+["На складе нет недостающих деталей.","仓库里没有缺件。"],
+
+["У отдела качества есть сомнения.","质量部门有疑虑。"],
+
+["В отчёте есть несколько отклонений.","报告里有几个偏差。"],
+
+["У проекта есть производственный план.","项目有生产计划。"],
+
+["В системе есть новая версия программного обеспечения.","系统里有软件的新版本。"],
+
+["У ответственного отдела есть необходимые данные.","负责部门有必要的数据。"]
+
+],
+
+2: [
+
+["Детали находятся на складе.","零件在仓库里。"],
+
+["Отчёт находится в системе.","报告在系统里。"],
+
+["Ответственный сотрудник сейчас на производстве.","负责人现在在生产现场。"],
+
+["Проверка проводится на входном контроле.","检查在来料检验处进行。"],
+
+["Недостающие детали находятся в отдельной зоне.","缺件在单独的区域里。"],
+
+["Документы находятся у руководителя проекта.","文件在项目经理那里。"],
+
+["Новая информация находится в системе.","新信息在系统里。"],
+
+["Поставщик находится в процессе проверки.","供应商正在接受检查。"],
+
+["Детали находятся между двумя рабочими местами.","零件在两个工位之间。"],
+
+["Ответственный отдел находится на связи с поставщиком.","负责部门正在与供应商联系。"]
+
+],
+
+3: [
+
+["Это не наша ошибка.","这不是我们的错误。"],
+
+["Детали не соответствуют стандарту.","零件不符合标准。"],
+
+["Отдел качества не получил ответ.","质量部门没有收到回复。"],
+
+["Поставщик не подтвердил срок поставки.","供应商没有确认交货时间。"],
+
+["Мы не можем начать сборку.","我们不能开始总装。"],
+
+["Количество деталей не совпадает с системой.","零件数量与系统不一致。"],
+
+["Производственный план пока не изменился.","生产计划暂时没有变化。"],
+
+["Ответственный сотрудник не сообщил о проблеме.","负责人没有报告这个问题。"],
+
+["Эти данные не соответствуют результатам проверки.","这些数据与检查结果不一致。"],
+
+["Мы не должны начинать производство без разрешения.","没有批准，我们不能开始生产。"]
+
+],
+
+4: [
+
+["На складе нет деталей.","仓库里没有零件。"],
+
+["Мы не получили ответ.","我们没有收到回复。"],
+
+["Поставщик ещё не отправил документы.","供应商还没有发送文件。"],
+
+["В системе нет этой информации.","系统里没有这个信息。"],
+
+["У нас нет достаточных данных.","我们没有足够的数据。"],
+
+["Отдел качества ещё не завершил проверку.","质量部门还没有完成检查。"],
+
+["Мы не обнаружили отклонений.","我们没有发现偏差。"],
+
+["Поставщик не предоставил подтверждение.","供应商没有提供确认文件。"],
+
+["На складе нет необходимого количества деталей.","仓库里没有足够数量的零件。"],
+
+["Проектный отдел пока не получил окончательные результаты.","项目部门还没有收到最终结果。"]
+
+]
+
+};
+
+let currentDay = Number(localStorage.getItem("ct_day") || 1);
+
+let currentTask = Number(localStorage.getItem("ct_task") || 0);
+
+let answers = JSON.parse(localStorage.getItem("ct_answers") || "{}");
+
+let completed = JSON.parse(localStorage.getItem("ct_completed") || "[]");
 
 function save(){
 
- localStorage.setItem("ct_done",JSON.stringify(done));
+ localStorage.setItem("ct_day",currentDay);
+
+ localStorage.setItem("ct_task",currentTask);
 
  localStorage.setItem("ct_answers",JSON.stringify(answers));
 
+ localStorage.setItem("ct_completed",JSON.stringify(completed));
+
 }
+
+function getConstructionIndex(){return Math.floor((currentDay-1)/2)}
+
+function getDayInPair(){return (currentDay-1)%2+1}
 
 function render(){
 
- document.getElementById("question").textContent=tasks[current][0];
+ const index=getConstructionIndex();
 
- document.getElementById("counter").textContent=(current+1)+" / "+tasks.length;
+ const item=curriculum[index];
 
- document.getElementById("userAnswer").value=answers[current]||"";
+ document.getElementById("overall").textContent="День "+currentDay+" из 100";
 
- document.getElementById("answer").style.display="none";
+ document.getElementById("overallBar").style.width=(completed.length)+"%";
 
- document.getElementById("answer").textContent="";
+ document.getElementById("doneText").textContent="Выполнено "+completed.length+" из 100 дней";
 
- document.getElementById("progress").textContent=done.length+" / "+tasks.length;
+ document.getElementById("dayLabel").textContent="ДЕНЬ "+currentDay+" · "+(getDayInPair()===1?"ПЕРВАЯ ТРЕНИРОВКА":"ПОВТОРЕНИЕ И УСЛОЖНЕНИЕ");
 
- document.getElementById("bar").style.width=(done.length/tasks.length*100)+"%";
+ document.getElementById("construction").textContent=item[0];
+
+ document.getElementById("description").textContent=item[1];
+
+ document.getElementById("taskCount").textContent="Задание "+(currentTask+1)+" из 10";
+
+ document.getElementById("dayBar").style.width=(currentTask*10)+"%";
+
+ document.getElementById("userAnswer").value=answers[currentDay+"_"+currentTask]||"";
+
+ document.getElementById("answer").classList.remove("show");
+
+ document.getElementById("message").textContent="";
+
+ const set=exercises[index];
+
+ if(!set){
+
+  document.getElementById("question").textContent="Материал для этой конструкции ещё готовится.";
+
+  document.getElementById("chineseAnswer").textContent="";
+
+  document.getElementById("explanation").textContent="Следующие уроки будем добавлять проверенными наборами.";
+
+  document.getElementById("message").textContent="Этот урок пока не заполнен.";
+
+ }else{
+
+  document.getElementById("question").textContent=set[currentTask][0];
+
+  document.getElementById("chineseAnswer").textContent=set[currentTask][1];
+
+  document.getElementById("explanation").textContent="Целевая конструкция: "+item[0];
+
+ }
+
+ renderList();
+
+ save();
 
 }
 
-document.getElementById("userAnswer").addEventListener("input",function(){
+function showAnswer(){
 
- answers[current]=this.value;
+ const set=exercises[getConstructionIndex()];
+
+ if(!set)return;
+
+ answers[currentDay+"_"+currentTask]=document.getElementById("userAnswer").value;
+
+ save();
+
+ document.getElementById("answer").classList.add("show");
+
+}
+
+function nextTask(){
+
+ const set=exercises[getConstructionIndex()];
+
+ if(!set){
+
+  document.getElementById("message").textContent="Сначала добавим упражнения для этой конструкции.";
+
+  return;
+
+ }
+
+ answers[currentDay+"_"+currentTask]=document.getElementById("userAnswer").value;
+
+ if(currentTask<9)currentTask++;
+
+ else currentTask=0;
+
+ save();render();
+
+}
+
+function completeDay(){
+
+ const set=exercises[getConstructionIndex()];
+
+ if(!set){
+
+  document.getElementById("message").textContent="Этот урок ещё не заполнен.";
+
+  return;
+
+ }
+
+ if(!completed.includes(currentDay))completed.push(currentDay);
+
+ save();render();
+
+ document.getElementById("message").textContent="День отмечен как выполненный.";
+
+}
+
+function nextDay(){
+
+ if(currentDay<100){currentDay++;currentTask=0;save();render();}
+
+}
+
+function previousDay(){
+
+ if(currentDay>1){currentDay--;currentTask=0;save();render();}
+
+}
+
+function openDay(day){
+
+ currentDay=day;currentTask=0;save();render();
+
+}
+
+function renderList(){
+
+ const list=document.getElementById("lessonList");
+
+ list.innerHTML="";
+
+ curriculum.forEach((item,index)=>{
+
+  const first=index*2+1;
+
+  const button=document.createElement("button");
+
+  button.className="lesson";
+
+  if(getConstructionIndex()===index)button.classList.add("active");
+
+  if(completed.includes(first)&&completed.includes(first+1))button.classList.add("done");
+
+  button.innerHTML="<span>"+(index+1)+". "+item[0]+"</span><span class='small'>Дни "+first+"–"+(first+1)+"</span>";
+
+  button.onclick=()=>openDay(first);
+
+  list.appendChild(button);
+
+ });
+
+}
+
+document.getElementById("userAnswer").addEventListener("input",()=>{
+
+ answers[currentDay+"_"+currentTask]=document.getElementById("userAnswer").value;
 
  save();
 
 });
-
-function showAnswer(){
-
- const box=document.getElementById("answer");
-
- box.innerHTML="<strong>Эталонный перевод:</strong><br>"+tasks[current][1];
-
- box.style.display="block";
-
-}
-
-function markDone(){
-
- if(!done.includes(current))done.push(current);
-
- save();
-
- render();
-
-}
-
-function next(){
-
- current=(current+1)%tasks.length;
-
- render();
-
-}
-
-function previous(){
-
- current=(current-1+tasks.length)%tasks.length;
-
- render();
-
-}
-
-function resetProgress(){
-
- if(confirm("Сбросить весь прогресс и ответы?")){
-
-  done=[];
-
-  answers={};
-
-  save();
-
-  render();
-
- }
-
-}
 
 render();
 
