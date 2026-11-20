@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="theme-color" content="#172033">
+
+<title>Chinese Trainer</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{margin:0;background:#f3f5f9;color:#172033;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+
+header{background:#172033;color:white;padding:25px 20px}
+
+header h1{margin:0;font-size:25px}
+
+header p{margin:7px 0 0;color:#cbd5e1}
+
+main{max-width:650px;margin:auto;padding:18px}
+
+.card{background:white;border-radius:17px;padding:20px;margin-bottom:16px;box-shadow:0 3px 14px #0000000b}
+
+.label{font-size:13px;color:#64748b;margin-bottom:10px}
+
+.task{font-size:21px;line-height:1.5;font-weight:600;margin:12px 0 20px}
+
+textarea{width:100%;min-height:115px;border:1px solid #cbd5e1;border-radius:12px;padding:13px;font-size:17px;resize:vertical}
+
+button{border:0;border-radius:11px;padding:13px 17px;font-size:16px;font-weight:600;cursor:pointer}
+
+.primary{background:#2563eb;color:white;width:100%;margin-top:12px}
+
+.secondary{background:#e8eef8;color:#172033}
+
+.answer{display:none;background:#eff6ff;padding:14px;border-radius:12px;margin-top:14px;line-height:1.6}
+
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+.small{font-size:13px;color:#64748b}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>中文 Chinese Trainer</h1>
+
+<p>Ежедневная практика китайского языка</p>
+
+</header>
+
+<main>
+
+<div class="card">
+
+<div class="row">
+
+<strong>Тренировка</strong>
+
+<span class="small" id="counter">1 / 10</span>
+
+</div>
+
+<p class="label">Переведи на китайский:</p>
+
+<div class="task" id="question"></div>
+
+<textarea id="userAnswer" placeholder="Напиши перевод на китайском..."></textarea>
+
+<button class="primary" onclick="showAnswer()">Проверить себя</button>
+
+<div class="answer" id="answer"></div>
+
+</div>
+
+<div class="card">
+
+<div class="row">
+
+<strong>Прогресс</strong>
+
+<strong id="progress">0 / 10</strong>
+
+</div>
+
+<p class="small">Количество просмотренных заданий</p>
+
+<button class="secondary" onclick="nextQuestion()">Следующее предложение →</button>
+
+</div>
+
+<div class="card">
+
+<strong>Напоминания</strong>
+
+<p class="small">Можно включить уведомления браузера. На iPhone для уведомлений может потребоваться установка сайта на экран «Домой».</p>
+
+<button class="secondary" onclick="enableNotifications()">Включить уведомления</button>
+
+<p class="small" id="notice"></p>
+
+</div>
+
+</main>
+
+<script>
+
+const tasks=[
+
+["Отдел качества не получил подтверждение от поставщика.","质量部门还没有收到供应商的确认。"],
+
+["На складе недостаточно деталей.","仓库里的零件数量不足。"],
+
+["Отсутствие результатов проверки означает, что проектный отдел не может подтвердить готовность производства.","没有检查结果，相当于项目部门无法确认生产是否准备好了。"],
+
+["Недостаток данных не позволяет принять окончательное решение.","数据不足，无法做出最终决定。"],
+
+["Поставщик должен устранить обнаруженные проблемы.","供应商需要解决发现的问题。"],
+
+["Задержка поставки может повлиять на производственный план.","交货延期可能会影响生产计划。"],
+
+["Отдел качества должен повторно проверить все детали.","质量部门需要重新检查所有零件。"],
+
+["Отсутствие необходимых деталей может привести к остановке линии.","缺少必要的零件可能会导致生产线停线。"],
+
+["Проектный отдел должен заранее уведомить производство.","项目部门需要提前通知生产部门。"],
+
+["Мы должны выяснить причину отклонения от плана.","我们需要查明偏离计划的原因。"]
+
+];
+
+let current=0,seen=new Set();
+
+function render(){
+
+document.getElementById("question").textContent=tasks[current][0];
+
+document.getElementById("counter").textContent=(current+1)+" / "+tasks.length;
+
+document.getElementById("userAnswer").value="";
+
+document.getElementById("answer").style.display="none";
+
+document.getElementById("answer").textContent="";
+
+document.getElementById("progress").textContent=seen.size+" / "+tasks.length;
+
+}
+
+function showAnswer(){
+
+seen.add(current);
+
+const box=document.getElementById("answer");
+
+box.innerHTML="<b>Вариант перевода:</b><br>"+tasks[current][1];
+
+box.style.display="block";
+
+document.getElementById("progress").textContent=seen.size+" / "+tasks.length;
+
+}
+
+function nextQuestion(){
+
+current=(current+1)%tasks.length;
+
+render();
+
+}
+
+async function enableNotifications(){
+
+const msg=document.getElementById("notice");
+
+if(!("Notification" in window)){msg.textContent="Этот браузер не поддерживает уведомления.";return;}
+
+const permission=await Notification.requestPermission();
+
+msg.textContent=permission==="granted"?"Разрешение получено. Автоматическое расписание добавим отдельно.":"Разрешение на уведомления не получено.";
+
+}
+
+render();
+
+</script>
+
+</body>
+
+</html>
