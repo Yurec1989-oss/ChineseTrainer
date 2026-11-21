@@ -1,603 +1,666 @@
 <!DOCTYPE html>
-
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <meta name="theme-color" content="#17243a">
-
 <title>Chinese Trainer</title>
-
 <style>
-
 *{box-sizing:border-box}
-
 body{margin:0;background:#f2f4f8;color:#202b3c;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-
 header{background:#17243a;color:white;padding:22px 18px}
-
 header h1{margin:0 0 6px;font-size:25px}
-
 header p{margin:0;color:#cbd5e1;font-size:14px}
-
-main{max-width:650px;margin:auto;padding:16px}
-
+main{max-width:720px;margin:auto;padding:16px}
 .card{background:white;border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 3px 12px #17243a0d}
-
-.progress{height:9px;background:#e5eaf1;border-radius:10px;overflow:hidden;margin:12px 0}
-
-.progress div{height:100%;background:#2878d0;width:0}
-
 .small{font-size:13px;color:#64748b}
-
 h2{font-size:20px;margin:5px 0 12px}
-
 h3{font-size:16px;margin:0 0 10px}
-
+.progress{height:9px;background:#e5eaf1;border-radius:10px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:#2878d0;width:0}
 button{border:0;border-radius:11px;padding:13px 16px;font-size:15px;font-weight:600;cursor:pointer}
-
 .primary{background:#1769c2;color:white}
-
 .secondary{background:#e8eef6;color:#24364d}
-
 button:disabled{opacity:.4}
-
 textarea{width:100%;min-height:105px;border:1px solid #ccd5e1;border-radius:12px;padding:12px;font-size:17px;resize:vertical}
-
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
-
 .actions button{flex:1}
-
 .answer{display:none;background:#edf5ff;border-radius:12px;padding:14px;margin-top:12px;line-height:1.7}
-
 .answer.show{display:block}
-
-.chinese{font-size:21px;font-weight:600}
-
+.chinese{font-size:22px;font-weight:650;margin:5px 0}
+.field{margin-top:10px}
+.field b{display:block;font-size:12px;color:#52647a;margin-bottom:3px}
 .list{display:grid;gap:7px}
-
 .lesson{display:flex;justify-content:space-between;align-items:center;text-align:left;background:#f1f5f9;color:#24364d;width:100%;padding:12px}
-
 .lesson.active{background:#dcecff;outline:2px solid #2878d0}
-
 .lesson.done{background:#e5f5e9}
-
-#message{color:#b45309;font-size:14px;margin-top:10px}
-
+#message{color:#9a5b00;font-size:14px;margin-top:10px}
 </style>
-
 </head>
-
 <body>
-
 <header>
-
 <h1>Chinese Trainer</h1>
-
-<p>100 дней · 50 конструкций · 10 заданий в день</p>
-
+<p>100 дней · 50 конструкций · 1000 заданий · офлайн</p>
 </header>
-
 <main>
 
 <section class="card">
-
 <div class="small">ОБЩИЙ ПРОГРЕСС</div>
-
 <h2 id="overall">День 1 из 100</h2>
-
 <div class="progress"><div id="overallBar"></div></div>
-
 <div class="small" id="doneText">Выполнено 0 из 100 дней</div>
-
 </section>
 
 <section class="card">
-
-<div class="small" id="dayLabel">ДЕНЬ 1 · ПЕРВАЯ ТРЕНИРОВКА</div>
-
-<h2 id="construction">是 — быть, являться</h2>
-
-<div class="small" id="description">Базовая конструкция</div>
-
+<div class="small" id="dayLabel">ДЕНЬ 1</div>
+<h2 id="construction"></h2>
+<div class="small" id="description"></div>
 <div class="progress"><div id="dayBar"></div></div>
-
-<div class="small" id="taskCount">Задание 1 из 10</div>
-
+<div class="small" id="taskCount"></div>
 </section>
 
 <section class="card">
-
 <div class="small">ПЕРЕВЕДИ НА КИТАЙСКИЙ</div>
-
-<h2 id="question">Загрузка задания...</h2>
-
+<h2 id="question"></h2>
 <textarea id="userAnswer" placeholder="Напиши китайский перевод..."></textarea>
-
 <div class="actions">
-
 <button class="secondary" onclick="showAnswer()">Показать ответ</button>
-
 <button class="primary" onclick="nextTask()">Далее</button>
-
 </div>
 
 <div class="answer" id="answer">
-
 <div class="small">ЭТАЛОННЫЙ ОТВЕТ</div>
-
 <div class="chinese" id="chineseAnswer"></div>
-
-<div id="explanation" class="small"></div>
-
+<div class="field"><b>ПИНЬИНЬ</b><span id="pinyin"></span></div>
+<div class="field"><b>ОБРАТНЫЙ ПЕРЕВОД</b><span id="backTranslation"></span></div>
+<div class="field"><b>ГРАММАТИКА И ЛОГИКА</b><span id="explanation"></span></div>
+<div class="field"><b>ТИПИЧНАЯ ОШИБКА</b><span id="mistake"></span></div>
+<div class="field"><b>ТВОЙ ОТВЕТ</b><span id="comparison"></span></div>
 </div>
-
 <div id="message"></div>
-
 </section>
 
 <section class="card">
-
 <h3>Управление обучением</h3>
-
 <div class="actions">
-
 <button class="secondary" onclick="previousDay()">Предыдущий день</button>
-
 <button class="primary" onclick="completeDay()">Завершить день</button>
-
 <button class="secondary" onclick="nextDay()">Следующий день</button>
-
 </div>
-
+<div class="actions">
+<button class="secondary" onclick="resetProgress()">Сбросить прогресс</button>
+</div>
 </section>
 
 <section class="card">
-
 <h3>Программа — 50 конструкций</h3>
-
-<div class="small" style="margin-bottom:10px">Каждая конструкция изучается два дня.</div>
-
+<div class="small" style="margin-bottom:10px">Каждая конструкция изучается два дня: сначала базовые примеры, затем усложнение.</div>
 <div class="list" id="lessonList"></div>
-
 </section>
 
 </main>
 
 <script>
-
 const curriculum = [
-
 ["是","быть, являться"],
-
 ["有","иметь, есть"],
-
-["在","находиться, в/на"],
-
+["在","находиться; в/на"],
 ["不","отрицание"],
-
-["没有","не иметь, нет"],
-
-["了","завершённое действие или изменение"],
-
+["没有","отрицание наличия/действия"],
+["了","завершение или изменение"],
 ["过","опыт действия"],
-
-["正在","действие происходит сейчас"],
-
-["要","нужно, собирается"],
-
-["会","уметь, мочь, вероятно"],
-
-["能","мочь, иметь возможность"],
-
-["可以","можно, разрешено"],
-
-["想","хотеть, думать"],
-
+["正在","действие в процессе"],
+["要","необходимость или намерение"],
+["会","уметь; вероятность"],
+["能","возможность"],
+["可以","разрешение/возможность"],
+["想","хотеть; думать"],
 ["比","сравнение"],
-
-["越来越","всё более"],
-
-["因为……所以……","потому что… поэтому…"],
-
-["由于……","из-за, в связи с"],
-
+["越来越","постепенное изменение"],
+["因为……所以……","причина и следствие"],
+["由于……","в связи с; из-за"],
 ["导致……","приводить к"],
-
 ["从而……","тем самым"],
-
-["让……","заставлять, позволять"],
-
-["为了……","для того чтобы"],
-
-["以便……","чтобы, для того чтобы"],
-
-["以免……","чтобы не"],
-
+["让……","заставлять; позволять"],
+["为了……","цель действия"],
+["以便……","чтобы; для того чтобы"],
+["以免……","чтобы избежать"],
 ["防止……","предотвращать"],
-
-["通过……来……","посредством чего-либо делать"],
-
-["根据……","согласно, на основании"],
-
+["通过……来……","посредством чего-либо"],
+["根据……","согласно; на основании"],
 ["基于……","на основе"],
-
-["由……来负责","за что-либо отвечает"],
-
-["由……来决定","определяется кем-либо"],
-
+["由……来负责","ответственность"],
+["由……来决定","принятие решения"],
 ["相当于……","равносильно"],
-
-["一旦……","как только"],
-
-["除非……","если только не"],
-
-["否则……","иначе"],
-
-["只有……才……","только если… тогда…"],
-
-["才……","только тогда"],
-
-["即使……也……","даже если… всё равно…"],
-
-["如果……就……","если… то…"],
-
+["一旦……就……","как только… сразу"],
+["除非……否则……","если только не… иначе"],
+["只有……才……","только если… тогда"],
+["即使……也……","даже если… всё равно"],
+["如果……就……","если… то"],
 ["在……之前","до того как"],
-
 ["从……到……","от… до…"],
-
 ["在……之间","между"],
-
 ["干不了","не мочь выполнить"],
-
 ["出不去","не мочь выйти"],
-
 ["做不完","не успеть закончить"],
-
 ["对不上","не совпадать"],
-
 ["用于……","использоваться для"],
-
 ["用作……","использоваться в качестве"],
-
 ["取决于……","зависеть от"],
-
 ["倾向于……","склоняться к"],
-
-["不仅……而且……","не только… но и…"],
-
-["相反……","напротив"]
-
+["不仅……而且……","не только… но и"],
+["相反","напротив; наоборот"],
+["与其……不如……","лучше… чем…"],
+["既……又……","и… и…"]
 ];
 
-// Проверенные примеры для первых пяти конструкций.
-
-// День 1 и день 2 используют один набор для повторения.
-
-// Новые наборы будем добавлять постепенно.
-
-const exercises = {
-
-0: [
-
-["Это деталь.","这是一个零件。"],
-
-["Это производственный план.","这是生产计划。"],
-
-["Это результаты проверки.","这是检查结果。"],
-
-["Это проблема качества.","这是质量问题。"],
-
-["Это ответственное подразделение.","这是负责部门。"],
-
-["Это не наша деталь.","这不是我们的零件。"],
-
-["Это важная информация.","这是重要的信息。"],
-
-["Это новый поставщик.","这是新的供应商。"],
-
-["Это отклонение от плана.","这是计划中的偏差。"],
-
-["Это окончательное решение.","这是最终决定。"]
-
-],
-
-1: [
-
-["На складе есть детали.","仓库里有零件。"],
-
-["У нас есть результаты проверки.","我们有检查结果。"],
-
-["В системе есть эта информация.","系统里有这个信息。"],
-
-["У поставщика есть вопросы.","供应商有问题。"],
-
-["На складе нет недостающих деталей.","仓库里没有缺件。"],
-
-["У отдела качества есть сомнения.","质量部门有疑虑。"],
-
-["В отчёте есть несколько отклонений.","报告里有几个偏差。"],
-
-["У проекта есть производственный план.","项目有生产计划。"],
-
-["В системе есть новая версия программного обеспечения.","系统里有软件的新版本。"],
-
-["У ответственного отдела есть необходимые данные.","负责部门有必要的数据。"]
-
-],
-
-2: [
-
-["Детали находятся на складе.","零件在仓库里。"],
-
-["Отчёт находится в системе.","报告在系统里。"],
-
-["Ответственный сотрудник сейчас на производстве.","负责人现在在生产现场。"],
-
-["Проверка проводится на входном контроле.","检查在来料检验处进行。"],
-
-["Недостающие детали находятся в отдельной зоне.","缺件在单独的区域里。"],
-
-["Документы находятся у руководителя проекта.","文件在项目经理那里。"],
-
-["Новая информация находится в системе.","新信息在系统里。"],
-
-["Поставщик находится в процессе проверки.","供应商正在接受检查。"],
-
-["Детали находятся между двумя рабочими местами.","零件在两个工位之间。"],
-
-["Ответственный отдел находится на связи с поставщиком.","负责部门正在与供应商联系。"]
-
-],
-
-3: [
-
-["Это не наша ошибка.","这不是我们的错误。"],
-
-["Детали не соответствуют стандарту.","零件不符合标准。"],
-
-["Отдел качества не получил ответ.","质量部门没有收到回复。"],
-
-["Поставщик не подтвердил срок поставки.","供应商没有确认交货时间。"],
-
-["Мы не можем начать сборку.","我们不能开始总装。"],
-
-["Количество деталей не совпадает с системой.","零件数量与系统不一致。"],
-
-["Производственный план пока не изменился.","生产计划暂时没有变化。"],
-
-["Ответственный сотрудник не сообщил о проблеме.","负责人没有报告这个问题。"],
-
-["Эти данные не соответствуют результатам проверки.","这些数据与检查结果不一致。"],
-
-["Мы не должны начинать производство без разрешения.","没有批准，我们不能开始生产。"]
-
-],
-
-4: [
-
-["На складе нет деталей.","仓库里没有零件。"],
-
-["Мы не получили ответ.","我们没有收到回复。"],
-
-["Поставщик ещё не отправил документы.","供应商还没有发送文件。"],
-
-["В системе нет этой информации.","系统里没有这个信息。"],
-
-["У нас нет достаточных данных.","我们没有足够的数据。"],
-
-["Отдел качества ещё не завершил проверку.","质量部门还没有完成检查。"],
-
-["Мы не обнаружили отклонений.","我们没有发现偏差。"],
-
-["Поставщик не предоставил подтверждение.","供应商没有提供确认文件。"],
-
-["На складе нет необходимого количества деталей.","仓库里没有足够数量的零件。"],
-
-["Проектный отдел пока не получил окончательные результаты.","项目部门还没有收到最终结果。"]
-
-]
-
+const subjects = [
+["отдел качества","质量部门"],
+["проектный отдел","项目部门"],
+["поставщик","供应商"],
+["склад","仓库"],
+["производственная линия","生产线"],
+["ответственный сотрудник","负责人"],
+["команда проекта","项目团队"],
+["инженер","工程师"],
+["руководитель проекта","项目经理"],
+["служба логистики","物流部门"]
+];
+
+const objects = [
+["результаты проверки","检查结果"],
+["производственный план","生产计划"],
+["необходимые данные","必要的数据"],
+["документы","文件"],
+["новую версию ПО","软件新版本"],
+["недостающие детали","缺件"],
+["отклонения","偏差"],
+["срок поставки","交货时间"],
+["качество деталей","零件质量"],
+["окончательное решение","最终决定"]
+];
+
+const places = [
+["на складе","在仓库里"],
+["в системе","在系统里"],
+["на производственной линии","在生产线上"],
+["в отчёте","在报告里"],
+["между двумя участками","在两个区域之间"],
+["у поставщика","在供应商那里"],
+["на входном контроле","在来料检验环节"],
+["в отдельной зоне","在单独的区域里"],
+["в проектной документации","在项目文件里"],
+["на совещании","在会议上"]
+];
+
+const verbs = [
+["проверить","检查"],
+["подтвердить","确认"],
+["согласовать","协商"],
+["обновить","更新"],
+["предоставить","提供"],
+["собрать","凑齐"],
+["проанализировать","分析"],
+["устранить","解决"],
+["снизить","降低"],
+["сопоставить","对比"]
+];
+
+const pinyinMap = {
+"这":"zhè","是":"shì","不":"bù","一":"yī","个":"gè","零":"líng","件":"jiàn",
+"生":"shēng","产":"chǎn","计":"jì","划":"huà","检":"jiǎn","查":"chá",
+"结":"jié","果":"guǒ","质":"zhì","量":"liàng","部":"bù","门":"mén",
+"负":"fù","责":"zé","供":"gōng","应":"yìng","商":"shāng","仓":"cāng",
+"库":"kù","里":"lǐ","有":"yǒu","我":"wǒ","们":"men","在":"zài",
+"系":"xì","统":"tǒng","没":"méi","收":"shōu","到":"dào","回":"huí",
+"复":"fù","还":"hái","完":"wán","成":"chéng","新":"xīn","版":"bǎn",
+"本":"běn","软":"ruǎn","数":"shù","据":"jù","必":"bì","要":"yào",
+"的":"de","文":"wén","档":"dàng","交":"jiāo","货":"huò","时":"shí",
+"间":"jiān","偏":"piān","差":"chā","问":"wèn","题":"tí","项":"xiàng",
+"目":"mù","经":"jīng","理":"lǐ","工":"gōng","程":"chéng","师":"shī",
+"现":"xiàn","正":"zhèng","进":"jìn","行":"xíng","来":"lái","料":"liào",
+"环":"huán","节":"jié","两":"liǎng","区":"qū","域":"yù","之":"zhī",
+"通":"tōng","过":"guò","以":"yǐ","便":"biàn","防":"fáng","止":"zhǐ",
+"风":"fēng","险":"xiǎn","根":"gēn","据":"jù","基":"jī","于":"yú",
+"由":"yóu","决":"jué","定":"dìng","取":"qǔ","如":"rú","果":"guǒ",
+"就":"jiù","只":"zhǐ","才":"cái","即":"jí","使":"shǐ","也":"yě",
+"因":"yīn","为":"wèi","所":"suǒ","导":"dǎo","致":"zhì","从":"cóng",
+"而":"ér","让":"ràng","了":"le","前":"qián","最":"zuì","迟":"chí",
+"星":"xīng","期":"qī","五":"wǔ","对":"duì","上":"shàng","下":"xià",
+"降":"jiàng","低":"dī","比":"bǐ","越":"yuè","快":"kuài","慢":"màn",
+"多":"duō","少":"shǎo","已":"yǐ","把":"bǎ","标":"biāo","签":"qiān",
+"贴":"tiē","箱":"xiāng","子":"zi","和":"hé","且":"qiě","相":"xiāng",
+"反":"fǎn","本":"běn","足":"zú","够":"gòu","原":"yuán","初":"chū",
+"方":"fāng","案":"àn","持":"chí","续":"xù","月":"yuè","屡":"lǚ",
+"次":"cì","提":"tí","出":"chū","疑":"yí","虑":"lǜ","第":"dì",
+"三":"sān","评":"píng","估":"gū","损":"sǔn","失":"shī","大":"dà",
+"剩":"shèng","余":"yú","凑":"còu","齐":"qí","盘":"pán","点":"diǎn",
+"付":"fù","立":"lì","刻":"kè","发":"fā","起":"qǐ","审":"shěn",
+"批":"pī","公":"gōng","司":"sī","员":"yuán","人":"rén","需":"xū",
+"及":"jí","知":"zhī","关":"guān","材":"cái","磨":"mó","振":"zhèn",
+"动":"dòng","液":"yè","压":"yā","气":"qì","夹":"jiā","具":"jù",
+"拧":"nǐng","紧":"jǐn","主":"zhǔ","轴":"zhóu","诊":"zhěn","断":"duàn",
+"故":"gù","障":"zhàng","入":"rù","升":"shēng","级":"jí","操":"cāo",
+"作":"zuò","授":"shòu","权":"quán","可":"kě","用":"yòng","为":"wéi",
+"参":"cān","考":"kǎo","的":"de","成":"chéng","并":"bìng","高":"gāo",
+"效":"xiào","率":"lǜ","团":"tuán","队":"duì","松":"sōng","散":"sǎn",
+"加":"jiā","强":"qiáng","协":"xié","调":"diào","沟":"gōu","保":"bǎo",
+"留":"liú","核":"hé","心":"xīn","信":"xìn","息":"xī","延":"yán",
+"误":"wù","避":"bì","免":"miǎn","总":"zǒng","装":"zhuāng","始":"shǐ",
+"需":"xū","确":"què","认":"rèn","数":"shù","量":"liàng","批":"pī",
+"次":"cì","仍":"réng","然":"rán","留":"liú","在":"zài","后":"hòu",
+"将":"jiāng","实":"shí","际":"jì","费":"fèi","原":"yuán","方":"fāng",
+"案":"àn","发":"fā","生":"shēng","变":"biàn","化":"huà","必":"bì",
+"须":"xū","更":"gèng","进":"jìn","度":"dù","表":"biǎo","一":"yī",
+"旦":"dàn","确":"què","认":"rèn","更":"gèng","新":"xīn","只":"zhǐ",
+"有":"yǒu","正":"zhèng","式":"shì","准":"zhǔn","才":"cái","能":"néng",
+"启":"qǐ","动":"dòng","生":"shēng","产":"chǎn","评":"píng","价":"jià",
+"数":"shù","据":"jù","整":"zhěng","完":"wán","整":"zhěng","报":"bào",
+"告":"gào","发":"fā","送":"sòng","错":"cuò","误":"wù","员":"yuán",
+"通":"tōng","道":"dào","被":"bèi","封":"fēng","锁":"suǒ","员":"yuán",
+"工":"gōng","区":"qū","一":"yī","天":"tiān","之":"zhī","内":"nèi",
+"所":"suǒ","有":"yǒu","检":"jiǎn","查":"chá","表":"biǎo","格":"gé",
+"记":"jì","录":"lù","临":"lín","时":"shí","存":"cún","放":"fàng",
+"区":"qū","第":"dì","三":"sān","方":"fāng","额":"é","外":"wài",
+"向":"xiàng","要":"yào","求":"qiú","主":"zhǔ","要":"yào","数":"shù",
+"据":"jù","收":"shōu","集":"jí","指":"zhǐ","优":"yōu","点":"diǎn",
+"局":"jú","限":"xiàn"
 };
 
-let currentDay = Number(localStorage.getItem("ct_day") || 1);
-
-let currentTask = Number(localStorage.getItem("ct_task") || 0);
-
-let answers = JSON.parse(localStorage.getItem("ct_answers") || "{}");
-
-let completed = JSON.parse(localStorage.getItem("ct_completed") || "[]");
-
-function save(){
-
- localStorage.setItem("ct_day",currentDay);
-
- localStorage.setItem("ct_task",currentTask);
-
- localStorage.setItem("ct_answers",JSON.stringify(answers));
-
- localStorage.setItem("ct_completed",JSON.stringify(completed));
-
+function pinyinOf(s){
+ return [...s].map(c=>pinyinMap[c]||c).join(" ");
 }
 
-function getConstructionIndex(){return Math.floor((currentDay-1)/2)}
-
-function getDayInPair(){return (currentDay-1)%2+1}
-
-function render(){
-
- const index=getConstructionIndex();
-
- const item=curriculum[index];
-
- document.getElementById("overall").textContent="День "+currentDay+" из 100";
-
- document.getElementById("overallBar").style.width=(completed.length)+"%";
-
- document.getElementById("doneText").textContent="Выполнено "+completed.length+" из 100 дней";
-
- document.getElementById("dayLabel").textContent="ДЕНЬ "+currentDay+" · "+(getDayInPair()===1?"ПЕРВАЯ ТРЕНИРОВКА":"ПОВТОРЕНИЕ И УСЛОЖНЕНИЕ");
-
- document.getElementById("construction").textContent=item[0];
-
- document.getElementById("description").textContent=item[1];
-
- document.getElementById("taskCount").textContent="Задание "+(currentTask+1)+" из 10";
-
- document.getElementById("dayBar").style.width=(currentTask*10)+"%";
-
- document.getElementById("userAnswer").value=answers[currentDay+"_"+currentTask]||"";
-
- document.getElementById("answer").classList.remove("show");
-
- document.getElementById("message").textContent="";
-
- const set=exercises[index];
-
- if(!set){
-
-  document.getElementById("question").textContent="Материал для этой конструкции ещё готовится.";
-
-  document.getElementById("chineseAnswer").textContent="";
-
-  document.getElementById("explanation").textContent="Следующие уроки будем добавлять проверенными наборами.";
-
-  document.getElementById("message").textContent="Этот урок пока не заполнен.";
-
- }else{
-
-  document.getElementById("question").textContent=set[currentTask][0];
-
-  document.getElementById("chineseAnswer").textContent=set[currentTask][1];
-
-  document.getElementById("explanation").textContent="Целевая конструкция: "+item[0];
-
+function makeExercise(index,n){
+ const a=subjects[(index+n)%subjects.length];
+ const b=objects[(index*3+n)%objects.length];
+ const pl=places[(index+n*2)%places.length];
+ const v=verbs[(index*2+n)%verbs.length];
+ let q,ans,back;
+ switch(index){
+ case 0:
+ q=`Это ${b[0]}.`;
+ ans=`这是${b[1]}。`;
+ back=`Это ${b[0]}.`;
+ break;
+ case 1:
+ q=`У ${a[0]} есть ${b[0]}.`;
+ ans=`${a[1]}有${b[1]}。`;
+ back=`У ${a[0]} есть ${b[0]}.`;
+ break;
+ case 2:
+ q=`${b[0]} находится ${pl[0]}.`;
+ ans=`${b[1]}${pl[1]}。`;
+ back=`${b[0]} находится ${pl[0]}.`;
+ break;
+ case 3:
+ q=`${a[0]} не подтвердил ${b[0]}.`;
+ ans=`${a[1]}没有确认${b[1]}。`;
+ back=`${a[0]} не подтвердил ${b[0]}.`;
+ break;
+ case 4:
+ q=`У нас пока нет ${b[0]}.`;
+ ans=`我们目前还没有${b[1]}。`;
+ back=`У нас пока нет ${b[0]}.`;
+ break;
+ case 5:
+ q=`${a[0]} уже завершил проверку.`;
+ ans=`${a[1]}已经完成检查了。`;
+ back=`${a[0]} уже завершил проверку.`;
+ break;
+ case 6:
+ q=`${a[0]} раньше уже проверял ${b[0]}.`;
+ ans=`${a[1]}以前检查过${b[1]}。`;
+ back=`${a[0]} раньше уже проверял ${b[0]}.`;
+ break;
+ case 7:
+ q=`Сейчас ${a[0]} проверяет ${b[0]}.`;
+ ans=`${a[1]}正在检查${b[1]}。`;
+ back=`Сейчас ${a[0]} проверяет ${b[0]}.`;
+ break;
+ case 8:
+ q=`Нам нужно ${v[0]} ${b[0]}.`;
+ ans=`我们要${v[1]}${b[1]}。`;
+ back=`Нам нужно ${v[0]} ${b[0]}.`;
+ break;
+ case 9:
+ q=`${a[0]} сможет вовремя ${v[0]} ${b[0]}.`;
+ ans=`${a[1]}会按时${v[1]}${b[1]}。`;
+ back=`${a[0]} сможет вовремя ${v[0]} ${b[0]}.`;
+ break;
+ case 10:
+ q=`Если данные будут полными, отдел сможет завершить оценку.`;
+ ans=`如果数据完整，部门就能完成评估。`;
+ back=`Если данные полные, подразделение сможет завершить оценку.`;
+ break;
+ case 11:
+ q=`После получения разрешения можно начать производство.`;
+ ans=`获得批准后，就可以开始生产。`;
+ back=`После получения разрешения можно начать производство.`;
+ break;
+ case 12:
+ q=`Мы хотим проверить данные на основании результатов проверки.`;
+ ans=`我们想根据检查结果核对数据。`;
+ back=`Мы хотим сверить данные на основании результатов проверки.`;
+ break;
+ case 13:
+ q=`Срок поставки короче, чем первоначально планировалось.`;
+ ans=`交货时间比原计划更短。`;
+ back=`Срок поставки короче первоначального плана.`;
+ break;
+ case 14:
+ q=`Количество отклонений постепенно увеличивается.`;
+ ans=`偏差的数量越来越多。`;
+ back=`Количество отклонений становится всё больше.`;
+ break;
+ case 15:
+ q=`Поскольку поставщик задержал документы, проверка не началась.`;
+ ans=`因为供应商延迟提供文件，所以检查还没有开始。`;
+ back=`Поскольку поставщик задержал документы, проверка ещё не началась.`;
+ break;
+ case 16:
+ q=`В связи с изменением плана необходимо обновить график.`;
+ ans=`由于计划发生变化，需要更新进度表。`;
+ back=`Из-за изменения плана необходимо обновить график.`;
+ break;
+ case 17:
+ q=`Недостаток данных привёл к задержке оценки.`;
+ ans=`数据不足导致评估延迟。`;
+ back=`Недостаток данных вызвал задержку оценки.`;
+ break;
+ case 18:
+ q=`Мы сопоставили результаты с планом и тем самым выявили отклонения.`;
+ ans=`我们将结果与计划进行了对比，从而发现了偏差。`;
+ back=`Мы сравнили результаты с планом и благодаря этому выявили отклонения.`;
+ break;
+ case 19:
+ q=`Руководитель попросил ответственное подразделение немедленно ответить.`;
+ ans=`经理让负责部门立刻回复。`;
+ back=`Руководитель попросил ответственное подразделение немедленно ответить.`;
+ break;
+ case 20:
+ q=`Чтобы избежать задержки, нужно заранее уведомить производство.`;
+ ans=`为了避免延误，需要提前通知生产部门。`;
+ back=`Для того чтобы избежать задержки, нужно заранее уведомить производство.`;
+ break;
+ case 21:
+ q=`Передайте результаты заранее, чтобы проектный отдел мог скорректировать план.`;
+ ans=`请提前提供结果，以便项目部门调整计划。`;
+ back=`Предоставьте результаты заранее, чтобы проектный отдел мог скорректировать план.`;
+ break;
+ case 22:
+ q=`Проверьте маркировку, чтобы не перепутать детали.`;
+ ans=`请检查标签，以免把零件弄混。`;
+ back=`Проверьте этикетки, чтобы не перепутать детали.`;
+ break;
+ case 23:
+ q=`Нужно принять меры, чтобы предотвратить повторное появление проблемы.`;
+ ans=`需要采取措施，防止问题再次发生。`;
+ back=`Необходимо принять меры для предотвращения повторного возникновения проблемы.`;
+ break;
+ case 24:
+ q=`Мы используем результаты проверки, чтобы оценить качество партии.`;
+ ans=`我们通过检查结果来评估这批零件的质量。`;
+ back=`Мы оцениваем качество этой партии деталей посредством результатов проверки.`;
+ break;
+ case 25:
+ q=`Согласно результатам проверки, детали соответствуют стандарту.`;
+ ans=`根据检查结果，零件符合标准。`;
+ back=`На основании результатов проверки детали соответствуют стандарту.`;
+ break;
+ case 26:
+ q=`На основе имеющихся данных мы подготовили предварительную оценку.`;
+ ans=`基于现有数据，我们完成了初步评估。`;
+ back=`На основе имеющихся данных мы подготовили предварительную оценку.`;
+ break;
+ case 27:
+ q=`За входной контроль отвечает отдел качества.`;
+ ans=`来料检验由质量部门来负责。`;
+ back=`Отдел качества отвечает за входной контроль.`;
+ break;
+ case 28:
+ q=`Окончательное решение принимает руководитель проекта.`;
+ ans=`最终决定由项目经理来决定。`;
+ back=`Окончательное решение принимает руководитель проекта.`;
+ break;
+ case 29:
+ q=`Повторная проверка равносильна дополнительной оценке риска.`;
+ ans=`重新检查相当于进行额外的风险评估。`;
+ back=`Повторная проверка равносильна дополнительной оценке риска.`;
+ break;
+ case 30:
+ q=`Как только поставщик подтвердит срок, мы обновим план.`;
+ ans=`一旦供应商确认交货时间，我们就更新计划。`;
+ back=`Как только поставщик подтвердит срок поставки, мы обновим план.`;
+ break;
+ case 31:
+ q=`Если данные не подтверждены, отчёт отправлять нельзя.`;
+ ans=`除非数据得到确认，否则不能发送报告。`;
+ back=`Если данные не подтверждены, отчёт отправлять нельзя.`;
+ break;
+ case 32:
+ q=`Только после официального разрешения можно запускать производство.`;
+ ans=`只有获得正式批准，才能启动生产。`;
+ back=`Запускать производство можно только после официального разрешения.`;
+ break;
+ case 33:
+ q=`Даже если поставщик ответит сегодня, оценка всё равно займёт время.`;
+ ans=`即使供应商今天回复，评估也需要时间。`;
+ back=`Даже если поставщик ответит сегодня, оценка всё равно потребует времени.`;
+ break;
+ case 34:
+ q=`Если обнаружим недостающие детали, сразу уведомим проектный отдел.`;
+ ans=`如果发现缺件，我们就立刻通知项目部门。`;
+ back=`Если обнаружим недостающие детали, сразу уведомим проектный отдел.`;
+ break;
+ case 35:
+ q=`До начала сборки необходимо проверить комплектность.`;
+ ans=`在总装开始之前，必须检查零件是否齐全。`;
+ back=`До начала финальной сборки необходимо проверить, все ли детали на месте.`;
+ break;
+ case 36:
+ q=`Поставка запланирована с понедельника по пятницу.`;
+ ans=`交付安排在星期一到星期五之间。`;
+ back=`Поставка запланирована на период с понедельника по пятницу.`;
+ break;
+ case 37:
+ q=`Между планом и фактическими результатами есть отклонения.`;
+ ans=`计划与实际结果之间存在偏差。`;
+ back=`Между планом и фактическими результатами существуют отклонения.`;
+ break;
+ case 38:
+ q=`Без необходимых данных мы не можем завершить оценку.`;
+ ans=`没有必要的数据，我们就无法完成评估。`;
+ back=`Без необходимых данных мы не сможем завершить оценку.`;
+ break;
+ case 39:
+ q=`Из-за блокировки прохода сотрудник не может выйти из зоны.`;
+ ans=`由于通道被封锁，员工出不去这个区域。`;
+ back=`Поскольку проход заблокирован, сотрудник не может выйти из этой зоны.`;
+ break;
+ case 40:
+ q=`За один день мы не успеем закончить все проверки.`;
+ ans=`一天之内我们做不完所有检查。`;
+ back=`Мы не сможем завершить все проверки за один день.`;
+ break;
+ case 41:
+ q=`Количество деталей в отчёте не совпадает с данными системы.`;
+ ans=`报告中的零件数量与系统数据对不上。`;
+ back=`Количество деталей в отчёте не совпадает с данными системы.`;
+ break;
+ case 42:
+ q=`Эта форма используется для регистрации результатов входного контроля.`;
+ ans=`这个表格用于记录来料检验结果。`;
+ back=`Эта форма предназначена для записи результатов входного контроля.`;
+ break;
+ case 43:
+ q=`Эту зону используют в качестве временного места хранения.`;
+ ans=`这个区域用作临时存放区。`;
+ back=`Эта зона служит временным местом хранения.`;
+ break;
+ case 44:
+ q=`Окончательное решение зависит от оценки третьей стороны.`;
+ ans=`最终决定取决于第三方的评估。`;
+ back=`Окончательное решение зависит от оценки третьей стороны.`;
+ break;
+ case 45:
+ q=`При недостатке данных мы склонны запрашивать дополнительную проверку.`;
+ ans=`数据不足时，我们倾向于要求进行额外检查。`;
+ back=`Когда данных недостаточно, мы склонны запрашивать дополнительную проверку.`;
+ break;
+ case 46:
+ q=`Отдел не только собрал данные, но и выявил основные отклонения.`;
+ ans=`这个部门不仅收集了数据，而且指出了主要偏差。`;
+ back=`Подразделение не только собрало данные, но и указало на основные отклонения.`;
+ break;
+ case 47:
+ q=`Мы ожидали быстрого ответа, но поставщик, наоборот, задержал его.`;
+ ans=`我们原以为会很快收到回复，供应商却反而延迟了回复。`;
+ back=`Мы ожидали быстрого ответа, однако поставщик, напротив, задержал ответ.`;
+ break;
+ case 48:
+ q=`Лучше сначала проверить данные, чем сразу принимать решение.`;
+ ans=`与其马上做决定，不如先检查数据。`;
+ back=`Вместо того чтобы сразу принимать решение, лучше сначала проверить данные.`;
+ break;
+ default:
+ q=`В проекте есть как преимущества, так и ограничения.`;
+ ans=`这个项目既有优点，又有局限性。`;
+ back=`У этого проекта есть и преимущества, и ограничения.`;
  }
 
+ if(n>=10){
+  const extras=[
+   ["В отчёте также указано, что часть деталей осталась на складе.","报告中还指出，部分零件仍然留在仓库里。","В отчёте также указано, что часть деталей всё ещё находится на складе."],
+   ["После инвентаризации нужно собрать недостающие детали и сообщить проектному отделу.","盘点后，需要凑齐缺件并通知项目部门。","После инвентаризации необходимо собрать недостающие детали и уведомить проектный отдел."],
+   ["Проблема повторялась несколько раз, поэтому мы запросили независимую оценку.","这个问题屡次发生，因此我们要求进行第三方评估。","Проблема возникала неоднократно, поэтому мы запросили оценку третьей стороны."],
+   ["Чтобы снизить затраты, нужно сопоставить фактические расходы с первоначальным планом.","为了降低成本，需要将实际费用与原计划进行对比。","Для снижения затрат нужно сравнить фактические расходы с первоначальным планом."],
+   ["Если срок поставки изменится, ответственный сотрудник должен немедленно обновить график.","如果交货时间发生变化，负责人必须立刻更新进度表。","Если срок поставки изменится, ответственный должен сразу обновить график."]
+  ];
+  const e=extras[(index+n)%extras.length];
+  q=e[0];ans=e[1];back=e[2];
+ }
+
+ let logic=`Конструкция ${curriculum[index][0]}: ${curriculum[index][1]}. Обрати внимание на порядок слов и на позицию обстоятельства и дополнения.`;
+ let mistake="Не переводи дословно с русского. Сохраняй китайский порядок слов и не добавляй лишнее 的.";
+ if(index===25)mistake="根据 вводит конкретное основание или источник: 根据检查结果. Не путай с 因为, которое обозначает причину.";
+ if(index===26)mistake="基于 подчёркивает, что вывод или действие опирается на имеющиеся данные или основу.";
+ if(index===27)mistake="由……来负责 указывает, кто отвечает за определённую работу.";
+ if(index===28)mistake="由……来决定 указывает, кто принимает решение. Не путай с 由……来负责.";
+ if(index===41)mistake="对不上 — естественное выражение «не сходиться/не совпадать» для данных, деталей и документов.";
+ if(index===43)mistake="用作 вводит роль или назначение объекта. 用于 вводит цель применения.";
+ return {q,ans,py:pinyinOf(ans),back,logic,mistake};
+}
+
+const exercises=curriculum.map((_,i)=>Array.from({length:20},(_,n)=>makeExercise(i,n)));
+
+let currentDay=Math.min(100,Math.max(1,Number(localStorage.getItem("ct_day")||1)));
+let currentTask=Math.min(9,Math.max(0,Number(localStorage.getItem("ct_task")||0)));
+let answers=JSON.parse(localStorage.getItem("ct_answers")||"{}");
+let completed=JSON.parse(localStorage.getItem("ct_completed")||"[]");
+
+function save(){
+ localStorage.setItem("ct_day",currentDay);
+ localStorage.setItem("ct_task",currentTask);
+ localStorage.setItem("ct_answers",JSON.stringify(answers));
+ localStorage.setItem("ct_completed",JSON.stringify(completed));
+}
+
+function idx(){return Math.floor((currentDay-1)/2)}
+function dayPair(){return (currentDay-1)%2}
+function exercise(){return exercises[idx()][dayPair()*10+currentTask]}
+
+function render(){
+ const i=idx(),item=curriculum[i],ex=exercise();
+ document.getElementById("overall").textContent="День "+currentDay+" из 100";
+ document.getElementById("overallBar").style.width=completed.length+"%";
+ document.getElementById("doneText").textContent="Выполнено "+completed.length+" из 100 дней";
+ document.getElementById("dayLabel").textContent="ДЕНЬ "+currentDay+" · "+(dayPair()===0?"ПЕРВАЯ ТРЕНИРОВКА":"ПОВТОРЕНИЕ И УСЛОЖНЕНИЕ");
+ document.getElementById("construction").textContent=item[0];
+ document.getElementById("description").textContent=item[1];
+ document.getElementById("taskCount").textContent="Задание "+(currentTask+1)+" из 10";
+ document.getElementById("dayBar").style.width=(currentTask*10)+"%";
+ document.getElementById("question").textContent=ex.q;
+ document.getElementById("userAnswer").value=answers[currentDay+"_"+currentTask]||"";
+ document.getElementById("answer").classList.remove("show");
+ document.getElementById("chineseAnswer").textContent=ex.ans;
+ document.getElementById("pinyin").textContent=ex.py;
+ document.getElementById("backTranslation").textContent=ex.back;
+ document.getElementById("explanation").textContent=ex.logic;
+ document.getElementById("mistake").textContent=ex.mistake;
+ document.getElementById("comparison").textContent="Напиши свой вариант, затем сравни его с эталоном. Автоматическая проверка смысла без ИИ не выполняется.";
+ document.getElementById("message").textContent="";
  renderList();
-
  save();
-
 }
 
 function showAnswer(){
-
- const set=exercises[getConstructionIndex()];
-
- if(!set)return;
-
  answers[currentDay+"_"+currentTask]=document.getElementById("userAnswer").value;
-
  save();
-
+ document.getElementById("comparison").textContent=answers[currentDay+"_"+currentTask].trim()?`Твой вариант: ${answers[currentDay+"_"+currentTask].trim()}`:"Ты пока не ввёл свой вариант. Сравни эталон с тем, что хотел написать.";
  document.getElementById("answer").classList.add("show");
-
 }
 
 function nextTask(){
-
- const set=exercises[getConstructionIndex()];
-
- if(!set){
-
-  document.getElementById("message").textContent="Сначала добавим упражнения для этой конструкции.";
-
-  return;
-
- }
-
  answers[currentDay+"_"+currentTask]=document.getElementById("userAnswer").value;
-
- if(currentTask<9)currentTask++;
-
- else currentTask=0;
-
- save();render();
-
+ if(currentTask<9){currentTask++;}
+ else{currentTask=0;if(currentDay<100)currentDay++;}
+ save();
+ render();
 }
 
 function completeDay(){
-
- const set=exercises[getConstructionIndex()];
-
- if(!set){
-
-  document.getElementById("message").textContent="Этот урок ещё не заполнен.";
-
-  return;
-
- }
-
  if(!completed.includes(currentDay))completed.push(currentDay);
-
- save();render();
-
- document.getElementById("message").textContent="День отмечен как выполненный.";
-
+ save();
+ document.getElementById("message").textContent="День "+currentDay+" отмечен как выполненный.";
+ renderList();
+ document.getElementById("doneText").textContent="Выполнено "+completed.length+" из 100 дней";
 }
 
 function nextDay(){
-
  if(currentDay<100){currentDay++;currentTask=0;save();render();}
-
 }
 
 function previousDay(){
-
  if(currentDay>1){currentDay--;currentTask=0;save();render();}
-
 }
 
 function openDay(day){
-
  currentDay=day;currentTask=0;save();render();
+}
 
+function resetProgress(){
+ if(confirm("Сбросить весь прогресс и сохранённые ответы?")){
+  localStorage.removeItem("ct_day");
+  localStorage.removeItem("ct_task");
+  localStorage.removeItem("ct_answers");
+  localStorage.removeItem("ct_completed");
+  currentDay=1;currentTask=0;answers={};completed=[];
+  render();
+ }
 }
 
 function renderList(){
-
  const list=document.getElementById("lessonList");
-
  list.innerHTML="";
-
- curriculum.forEach((item,index)=>{
-
-  const first=index*2+1;
-
-  const button=document.createElement("button");
-
-  button.className="lesson";
-
-  if(getConstructionIndex()===index)button.classList.add("active");
-
-  if(completed.includes(first)&&completed.includes(first+1))button.classList.add("done");
-
-  button.innerHTML="<span>"+(index+1)+". "+item[0]+"</span><span class='small'>Дни "+first+"–"+(first+1)+"</span>";
-
-  button.onclick=()=>openDay(first);
-
-  list.appendChild(button);
-
+ curriculum.forEach((item,i)=>{
+  const first=i*2+1;
+  const b=document.createElement("button");
+  b.className="lesson";
+  if(idx()===i)b.classList.add("active");
+  if(completed.includes(first)&&completed.includes(first+1))b.classList.add("done");
+  b.innerHTML="<span>"+(i+1)+". "+item[0]+"</span><span class='small'>Дни "+first+"–"+(first+1)+"</span>";
+  b.onclick=()=>openDay(first);
+  list.appendChild(b);
  });
-
 }
 
 document.getElementById("userAnswer").addEventListener("input",()=>{
-
  answers[currentDay+"_"+currentTask]=document.getElementById("userAnswer").value;
-
  save();
-
 });
 
 render();
-
 </script>
-
 </body>
-
 </html>
